@@ -46,4 +46,7 @@ public class ServiceDefinition {
     @Column("is_active")
     private Boolean isActive = true;
 
+    @Column("configuration")
+    private String configuration;
+
 }
