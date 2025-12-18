@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.pashkevich.dmonitorapp.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.pashkevich.dmonitorapp.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/dmonitorapp.iml" filepath="$PROJECT_DIR$/.idea/dmonitorapp.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/dmonitorapp.dmonitorapp.main~1.iml" filepath="$PROJECT_DIR$/.idea/modules/dmonitorapp.dmonitorapp.main~1.iml" />
     </modules>
   </component>
 </project>
