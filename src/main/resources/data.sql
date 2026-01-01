@@ -39,14 +39,14 @@ CREATE TABLE database_connection (
 );
 
 -- Вставляем тестовые данные
-INSERT INTO service_definitions (name, url, check_interval_seconds, check_type) 
-VALUES 
+INSERT INTO service_definitions (name, url, check_interval_seconds, check_type)
+VALUES
     ('Google', 'https://www.google.com', 30, 'HTTP'),
     ('Test API', 'https://httpbin.org/status/200', 30, 'HTTP')
 ON CONFLICT (name) DO NOTHING;
 
 -- Используем R2DBC URL (не JDBC) и правильное имя БД
-INSERT INTO database_connection (name, connection_url, username, password, driver_class_name) 
-VALUES 
-    ('main-db', 'r2dbc:postgresql://localhost:5434/monitor_db', 'monitor_user', 'pass', 'org.postgresql.Driver')
+INSERT INTO database_connection (name, connection_url, username, password, driver_class_name)
+VALUES
+    ('main-db', 'r2dbc:postgresql://postgres-monitor:5432/monitor_db', 'monitor_user', 'pass', 'org.postgresql.Driver')
 ON CONFLICT (name) DO NOTHING;
