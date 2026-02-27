@@ -12,11 +12,13 @@ import com.pashkevich.dmonitorapp.repository.ServiceDefinitionRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -40,29 +42,29 @@ public class MonitoringService {
         log.info("Инициализированы адаптеры для типов проверок: {}", adapters.keySet());
     }
 
-    public Mono<String> performChecks() {
-        log.info("Запуск проверок здоровья сервисов...");
+    @Async("virtualTaskExecutor")
+    public CompletableFuture<String> performChecks() {
+        log.info("Запуск проверок здоровья сервисов в виртуальном потоке...");
 
         return serviceDefinitionRepository.findAll()
-                .flatMap(this::performCheckByType)
-                .flatMap(healthCheckResultRepository::save)
+                .flatMap(service -> {
+                    CheckType checkType = service.getCheckType();
+                    HealthCheckAdapter adapter = adapters.get(checkType);
+
+                    if (adapter == null) {
+                        log.warn("Не найден адаптер для типа проверки: {}", checkType);
+                        return Mono.empty();
+                    }
+
+                    return adapter.checkHealth(service)
+                            .flatMap(healthCheckResultRepository::save)
+                            .onErrorResume(error -> {
+                                log.error("Ошибка при сохранении результата проверки: {}", error.getMessage());
+                                return Mono.empty();
+                            });
+                })
                 .then(Mono.just("Проверки успешно завершены"))
-                .onErrorResume(error -> {
-                    log.error("Ошибка при выполнении проверок: {}", error.getMessage());
-                    return Mono.just("Проверки завершены с ошибками");
-                });
-    }
-
-    private Mono<HealthCheckResult> performCheckByType(ServiceDefinition service) {
-        CheckType checkType = service.getCheckType();
-        HealthCheckAdapter adapter = adapters.get(checkType);
-
-        if (adapter == null) {
-            log.warn("Не найден адаптер для типа проверки: {}", checkType);
-            return Mono.empty();
-        }
-
-        return adapter.checkHealth(service);
+                .toFuture();
     }
 
     public Flux<ServiceDefinition> getServiceDefinitions() {

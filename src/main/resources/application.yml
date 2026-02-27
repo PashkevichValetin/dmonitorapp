@@ -2,7 +2,6 @@ server:
   port: 8080
 
 spring:
-
   r2dbc:
     url: r2dbc:postgresql://localhost:5434/monitor_db
     username: monitor_user
@@ -13,4 +12,13 @@ spring:
       schema-locations: classpath:data.sql
       data-locations: classpath:data.sql
 
+  task:
+    scheduling:
+      pool:
+        size: 100
+    execution:
+      pool:
+        size: 100
+        queue-capacity: 1000
+        thread-name-prefix: "monitoring-"
 

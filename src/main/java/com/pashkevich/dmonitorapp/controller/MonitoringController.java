@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.concurrent.CompletableFuture;
+
 @RestController
 @RequestMapping("/api/monitoring")
 @RequiredArgsConstructor
@@ -23,7 +25,7 @@ public class MonitoringController {
     }
 
     @PostMapping("/checks")
-    public Mono<String> performChecks() {
+    public CompletableFuture<String> performChecks() {
         return monitoringService.performChecks();
     }
 
@@ -33,7 +35,7 @@ public class MonitoringController {
     }
 
     @GetMapping("/checks/run")
-    public Mono<String> runChecks() {
+    public CompletableFuture<String> runChecks() {
         return monitoringService.performChecks();
     }
 }

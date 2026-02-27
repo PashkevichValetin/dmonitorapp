@@ -27,7 +27,7 @@ public class HealthCheckResult {
 
     @Column("checked_at")
     @CreatedDate
-    private LocalDateTime checkAt = LocalDateTime.now();
+    private LocalDateTime checkedAt = LocalDateTime.now();
 
     private ServiceStatus status;
 
@@ -35,7 +35,7 @@ public class HealthCheckResult {
     private Long responseTimeMs;
 
     @Column("message")
-    private String errorMessage;
+    private String message;
 
     @Column("additional_info")
     private String additionalInfo;

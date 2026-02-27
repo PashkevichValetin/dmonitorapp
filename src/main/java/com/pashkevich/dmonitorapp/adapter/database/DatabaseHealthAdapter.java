@@ -13,6 +13,8 @@ import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 @RequiredArgsConstructor
@@ -20,6 +22,7 @@ import java.time.Instant;
 public class DatabaseHealthAdapter implements HealthCheckAdapter {
 
     private final DatabaseConnectionRepository databaseConnectionRepository;
+    private final Map<String, ConnectionFactory> connectionFactoryCache = new ConcurrentHashMap<>();
 
     @Override
     public Mono<HealthCheckResult> checkHealth(ServiceDefinition service) {
@@ -47,8 +50,8 @@ public class DatabaseHealthAdapter implements HealthCheckAdapter {
     }
 
     private DatabaseClient createDatabaseClient(DatabaseConnectionConfig config) {
-        ConnectionFactory connectionFactory = ConnectionFactories.get(config.getConnectionUrl());
-        return DatabaseClient.create(connectionFactory);
+        return DatabaseClient.create(connectionFactoryCache.computeIfAbsent(config.getConnectionUrl(),
+                ConnectionFactories::get));
     }
 
     private HealthCheckResult createSuccessResult(ServiceDefinition service, Instant start) {
@@ -57,7 +60,7 @@ public class DatabaseHealthAdapter implements HealthCheckAdapter {
                 .serviceDefinitionId(service.getId())
                 .status(ServiceStatus.UP)
                 .responseTimeMs(responseTime)
-                .errorMessage("Database connection successful")
+                .message("Database connection successful")
                 .build();
     }
 
@@ -67,7 +70,7 @@ public class DatabaseHealthAdapter implements HealthCheckAdapter {
                 .serviceDefinitionId(service.getId())
                 .status(ServiceStatus.DOWN)
                 .responseTimeMs(responseTime)
-                .errorMessage("Database error: " + error.getMessage())
+                .message("Database error: " + error.getMessage())
                 .build());
     }
 
@@ -75,7 +78,7 @@ public class DatabaseHealthAdapter implements HealthCheckAdapter {
         return Mono.just(HealthCheckResult.builder()
                 .serviceDefinitionId(service.getId())
                 .status(ServiceStatus.DOWN)
-                .errorMessage("Database config error: " + error.getMessage())
+                .message("Database config error: " + error.getMessage())
                 .build());
     }
 }

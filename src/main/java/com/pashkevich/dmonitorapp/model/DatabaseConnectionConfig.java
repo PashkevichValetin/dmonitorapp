@@ -48,5 +48,5 @@ public class DatabaseConnectionConfig {
     private Boolean isActive;
 
     @Column("created_at")
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 }

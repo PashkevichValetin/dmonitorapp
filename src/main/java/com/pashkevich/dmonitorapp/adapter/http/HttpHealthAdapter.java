@@ -51,10 +51,10 @@ public class HttpHealthAdapter implements HealthCheckAdapter {
         long responseTime = calculateResponseTime(startTime);
         return HealthCheckResult.builder()
                 .serviceDefinitionId(service.getId())
-                .checkAt(LocalDateTime.now())
+                .checkedAt(LocalDateTime.now())
                 .status(ServiceStatus.UP)
                 .responseTimeMs(responseTime)
-                .errorMessage(null)
+                .message(null)
                 .build();
 
     }
@@ -67,10 +67,10 @@ public class HttpHealthAdapter implements HealthCheckAdapter {
 
         return HealthCheckResult.builder()
                 .serviceDefinitionId(service.getId())
-                .checkAt(LocalDateTime.now())
+                .checkedAt(LocalDateTime.now())
                 .status(ServiceStatus.DOWN)
                 .responseTimeMs(responseTime)
-                .errorMessage(extractErrorMessage( error))
+                .message(extractErrorMessage( error))
                 .build();
     }
 

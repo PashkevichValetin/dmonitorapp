@@ -38,10 +38,10 @@ public class ServiceDefinition {
     private Long databaseConfigId;
 
     @Column("created_at")
-    private LocalDateTime createAT;
+    private LocalDateTime createdAT;
 
     @Column("updated_at")
-    private LocalDateTime updateAt;
+    private LocalDateTime updatedAt;
 
     @Column("is_active")
     private Boolean isActive = true;

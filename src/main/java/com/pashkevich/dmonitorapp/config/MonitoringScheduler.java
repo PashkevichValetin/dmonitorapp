@@ -6,20 +6,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.CompletableFuture;
+
+
 @Component
 @Slf4j
 @RequiredArgsConstructor
 public class MonitoringScheduler {
     private final MonitoringService monitoringService;
 
-    @Scheduled(fixedRate = 30000)
+    @Scheduled(fixedRate = 30000, initialDelay = 5000)
     public void runMonitoring() {
+        log.info("Запуск мониторинга через @Scheduled");
 
-        monitoringService.performChecks()
-                .doOnSuccess(result -> log.info("Monitor completed: {}",
-                        result))
-                .doOnError(error -> log.error("Monitoring error: {}",
-                        error.getMessage()))
-                .subscribe();
+        CompletableFuture<String> future = monitoringService.performChecks();
+        future.join();
     }
 }
